@@ -20,7 +20,7 @@ jobs:
       seed: ${{ steps.seed.outputs.seed }}
     steps:
     - id: seed
-      run: echo "::set-output name=seed::[0, 1, 2, 3, 4, 5, 6, 7, 8, 9]"
+      run: python -c "print('::set-output name=seed::[%s]' % ','.join(range(0,100)))"
 
   yosys:
     needs: build-yosys
