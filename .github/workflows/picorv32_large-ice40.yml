@@ -5,12 +5,12 @@ on:
     - icestorm.sha
     - nextpnr.sha
     - picorv32.v
-    - picorv32_top.v
-    - .github/workflows/picorv32-ice40-abc9.yml
+    - synth_area_top.v
+    - .github/workflows/picorv32_large-ice40.yml
 
 env:
-  yosys-args: "-top top -abc9"
-  yosys-input: "picorv32.v picorv32_top.v"
+  yosys-args: "-top top_large"
+  yosys-input: "picorv32.v synth_area_top.v"
   nextpnr-args: "--hx8k --freq 70"
 
 jobs:

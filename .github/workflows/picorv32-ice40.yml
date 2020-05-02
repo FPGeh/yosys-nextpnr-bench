@@ -20,7 +20,7 @@ jobs:
       seed: ${{ steps.seed.outputs.seed }}
     steps:
     - id: seed
-      run: python -c "print('::set-output name=seed::[%s]' % ','.join(range(0,100)))"
+      run: python -c "print('::set-output name=seed::[%s]' % ','.join(map(str,range(0,100))))"
 
   yosys:
     needs: build-yosys
@@ -48,6 +48,7 @@ jobs:
   nextpnr:
     needs: [setup-matrix, build-nextpnr-ice40, yosys]
     runs-on: ubuntu-latest
+    continue-on-error: true
     strategy:
       matrix:
         seed: ${{ fromJson(needs.setup-matrix.outputs.seed) }}
@@ -67,16 +68,23 @@ jobs:
         name: synth
     - run: nextpnr-ice40 --json synth.json --seed ${{ matrix.seed }} ${{ env.nextpnr-args }} |& tee nextpnr-${{ matrix.seed }}.log
     - run: "sed -nr 's/.* Max frequency .*: ([0-9.]+).*/\\1/p' nextpnr-${{ matrix.seed }}.log | tail -n1 | tee nextpnr-${{ matrix.seed }}.fmax"
+    - run: "[ nextpnr-${{ matrix.seed }}.fmax ] || rm nextpnr-${{ matrix.seed }}.fmax"
     - uses: actions/upload-artifact@v2
       with:
-        path: 'nextpnr-${{ matrix.seed }}.*'
+        name: fmax
+        path: '*.fmax'
+    - uses: actions/upload-artifact@v2
+      with:
+        path: '*.log'
 
   summary:
     needs: [setup-matrix, nextpnr]
     runs-on: ubuntu-latest
     steps:
     - uses: actions/download-artifact@v2
-    - run: "python -c \"import sys; v=[ float(open(i).readline()) for i in sys.argv[1:] ]; print('Min: %.2f MHz; Avg: %.2f MHz; Max %.2f MHz; over %d seeds' % (min(v), sum(v)/len(v), max(v), len(v)))\" artifact/nextpnr-*.fmax |& tee summary"
+      with:
+        name: fmax
+    - run: "python -c \"import sys; v=[ float(open(i).readline()) for i in sys.argv[1:] ]; print('Min: %.2f MHz; Avg: %.2f MHz; Max %.2f MHz; over %d seeds' % (min(v), sum(v)/len(v), max(v), len(v)))\" *.fmax |& tee summary"
     - run: echo "::warning ::$(cat summary)"
 
   build-yosys:
