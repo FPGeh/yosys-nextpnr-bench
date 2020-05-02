@@ -9,7 +9,7 @@ on:
     - .github/workflows/picorv32_large-ice40.yml
 
 env:
-  yosys-args: "-top top_large -abc9"
+  yosys-args: "-top top_large"
   yosys-input: "picorv32_large.ys"
   nextpnr-args: "--hx8k --freq 60"
 
