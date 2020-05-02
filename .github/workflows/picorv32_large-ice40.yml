@@ -9,9 +9,9 @@ on:
     - .github/workflows/picorv32_large-ice40.yml
 
 env:
-  yosys-args: "-top top_large"
-  yosys-input: "picorv32.v synth_area_top.v"
-  nextpnr-args: "--hx8k --freq 70"
+  yosys-args: "-top top_large -abc9"
+  yosys-input: "picorv32_large.ys"
+  nextpnr-args: "--hx8k --freq 60"
 
 jobs:
   setup-matrix:

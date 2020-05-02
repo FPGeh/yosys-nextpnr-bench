@@ -11,7 +11,7 @@ on:
 env:
   yosys-args: "-top top -abc9"
   yosys-input: "picorv32.v picorv32_top.v"
-  nextpnr-args: "--hx8k --freq 70"
+  nextpnr-args: "--hx8k --freq 80"
 
 jobs:
   setup-matrix:

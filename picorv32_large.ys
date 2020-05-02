@@ -1,0 +1,5 @@
+read_verilog synth_area_top.v
+read_verilog picorv32.v
+cd top_large
+delete -port x:pcpi_* x:irq x:eoi
+cd
