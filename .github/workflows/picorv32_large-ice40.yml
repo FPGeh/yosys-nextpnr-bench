@@ -68,7 +68,6 @@ jobs:
         name: synth
     - run: nextpnr-ice40 --json synth.json --seed ${{ matrix.seed }} ${{ env.nextpnr-args }} |& tee nextpnr-${{ matrix.seed }}.log
     - run: "sed -nr 's/.* Max frequency .*: ([0-9.]+).*/\\1/p' nextpnr-${{ matrix.seed }}.log | tail -n1 | tee nextpnr-${{ matrix.seed }}.fmax"
-    - run: "[ nextpnr-${{ matrix.seed }}.fmax ] || rm nextpnr-${{ matrix.seed }}.fmax"
     - uses: actions/upload-artifact@v2
       with:
         name: fmax
@@ -84,8 +83,22 @@ jobs:
     - uses: actions/download-artifact@v2
       with:
         name: fmax
-    - run: "python -c \"import sys; v=[ float(open(i).readline()) for i in sys.argv[1:] ]; print('Min: %.2f MHz; Avg: %.2f MHz; Max %.2f MHz; over %d seeds' % (min(v), sum(v)/len(v), max(v), len(v)))\" *.fmax |& tee summary"
-    - run: echo "::warning ::$(cat summary)"
+    - run: |
+        import sys, glob
+        v = []
+        for i in glob.glob('*.fmax'):
+          try:
+            v.append(float(open(i).readline()))
+          except ValueError:
+            pass
+        with open('summary.txt', 'w') as f:
+          print >>f, 'Min: %.2f MHz; Avg: %.2f MHz; Max %.2f MHz; over %d seeds' % (min(v), sum(v)/len(v), max(v), len(v))
+      shell: python
+    - run: echo "::warning ::$(cat summary.txt)"
+    - uses: actions/upload-artifact@v2
+      with:
+        name: summary
+        path: summary.txt
 
   build-yosys:
     runs-on: ubuntu-latest
