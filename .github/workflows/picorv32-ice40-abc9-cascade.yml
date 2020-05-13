@@ -54,6 +54,7 @@ jobs:
       matrix:
         seed: ${{ fromJson(needs.setup-matrix.outputs.seed) }}
     steps:
+    - uses: actions/checkout@v2
     - run: |
         echo "::set-env name=NEXTPNR_SHA::$(cat nextpnr.sha)"
     - uses: actions/cache@v1
