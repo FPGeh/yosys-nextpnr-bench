@@ -6,6 +6,7 @@ on:
     - nextpnr.sha
     - picorv32.v
     - synth_area_top.v
+    - picorv32_large.ys
     - .github/workflows/picorv32_large-ice40.yml
 
 env:
