@@ -162,10 +162,10 @@ jobs:
     needs: build-icestorm
     steps:
     - uses: actions/checkout@v2
-    - uses: actions/checkout@v2
     - run: |
         echo "::set-env name=ICESTORM_SHA::$(cat icestorm.sha)"
         echo "::set-env name=NEXTPNR_SHA::$(cat nextpnr.sha)"
+    - uses: actions/checkout@v2
       with:
         repository: YosysHQ/nextpnr
         path: nextpnr
